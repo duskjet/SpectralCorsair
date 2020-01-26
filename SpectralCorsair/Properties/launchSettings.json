@@ -1,8 +1,7 @@
 {
   "profiles": {
     "SpectralCorsair": {
-      "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\admir\\Desktop\\receipt.png\" \"zhopa slona\""
+      "commandName": "Project"
     }
   }
 }
