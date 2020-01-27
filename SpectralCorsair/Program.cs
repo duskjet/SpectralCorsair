@@ -72,11 +72,14 @@ namespace SpectralCorsair
                 var img = await bot.GetInfoAndDownloadFileAsync(photos.Last().FileId, stream);
                 stream.Position = 0;
 
-                await DrawText(stream, caption);
+                using (var output = await DrawText(stream, caption))
+                {
+                    await bot.SendPhotoAsync(e.Message.Chat.Id, new Telegram.Bot.Types.InputFiles.InputOnlineFile(output));
+                }
             }
         }
 
-        private static async Task DrawText(Stream stream, string text)
+        private static async Task<Stream> DrawText(Stream stream, string text)
         {
             if (stream is null)
             {
@@ -95,14 +98,18 @@ namespace SpectralCorsair
                 HorizontalAlignment = HorizontalAlignment.Center
             };
 
+            MemoryStream output = new MemoryStream();
             using (Image image = Image.Load(stream, new JpegDecoder()))
             {
                 var position = new PointF(image.Width / 2, image.Height - 30);
 
-                image.Mutate(x => x.DrawText(options, text, font, Brushes.Solid(Rgba32.Black), Pens.Solid(Rgba32.White, 1), position));
+                image.Mutate(x => x.DrawText(options, text, font, Brushes.Solid(Rgba32.White), Pens.Solid(Rgba32.Black, 1), position));
 
-                image.Save("out.jpg", new JpegEncoder());
+                image.Save(output, new JpegEncoder());
+                output.Position = 0;
             }
+
+            return output;
         }
     }
 }
