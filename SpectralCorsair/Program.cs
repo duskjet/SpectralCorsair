@@ -67,12 +67,13 @@ namespace SpectralCorsair
             string pictures = string.Join(", ", e.Message.Photo?.Select(p => p.FileSize.ToString()) ?? new string[0]);
             Console.WriteLine($"New command from '{e.Message.From.Username}': {e.Message.Text}.\nCaption: {caption}. Pictures: {pictures}");
 
-            using (FileStream stream = new FileStream("in.jpg", FileMode.OpenOrCreate))
+            using (MemoryStream stream = new MemoryStream())
             {
                 var img = await bot.GetInfoAndDownloadFileAsync(photos.Last().FileId, stream);
-            }
+                stream.Position = 0;
 
-            await DrawText("in.jpg", caption);
+                await DrawText(stream, caption);
+            }
         }
 
         private static async Task DrawText(string path, string text)
