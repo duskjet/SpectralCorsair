@@ -76,39 +76,6 @@ namespace SpectralCorsair
             }
         }
 
-        private static async Task DrawText(string path, string text)
-        {
-            if (String.IsNullOrEmpty(path))
-            {
-                throw new ArgumentException("Path must not be empty.", nameof(path));
-            }
-
-            if (String.IsNullOrEmpty(text))
-            {
-                throw new ArgumentException("Text must not be empty", nameof(text));
-            }
-
-            var font = SystemFonts.CreateFont("Arial", 32);
-            var options = new TextGraphicsOptions(true)
-            {
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-
-            using (Image image = Image.Load(path))
-            {
-                var position = new PointF(image.Width / 2, image.Height - 30);
-
-                image.Mutate(x => x
-                        .DrawText(options, text, font, Brushes.Solid(Rgba32.Black), Pens.Solid(Rgba32.White, 1), position)
-                        //.Resize(image.Width / 2, image.Height / 2)
-                        //.Grayscale()
-                        );
-
-                image.Save("out.jpg"); // Automatic encoder selected based on extension.
-            }
-        }
-
         private static async Task DrawText(Stream stream, string text)
         {
             if (stream is null)
@@ -118,10 +85,10 @@ namespace SpectralCorsair
 
             if (String.IsNullOrEmpty(text))
             {
-                throw new ArgumentException("Text must not be empty", nameof(text));
+                throw new ArgumentNullException(nameof(text));
             }
 
-            var font = SystemFonts.CreateFont("Arial", 26);
+            var font = SystemFonts.CreateFont("Arial", 32);
             var options = new TextGraphicsOptions(true)
             {
                 VerticalAlignment = VerticalAlignment.Center,
@@ -132,13 +99,9 @@ namespace SpectralCorsair
             {
                 var position = new PointF(image.Width / 2, image.Height - 30);
 
-                image.Mutate(x => x
-                        .DrawText(options, text, font, Color.Black, position)
-                        //.Resize(image.Width / 2, image.Height / 2)
-                        //.Grayscale()
-                        );
+                image.Mutate(x => x.DrawText(options, text, font, Brushes.Solid(Rgba32.Black), Pens.Solid(Rgba32.White, 1), position));
 
-                image.Save("out.jpg", new JpegEncoder()); // Automatic encoder selected based on extension.
+                image.Save("out.jpg", new JpegEncoder());
             }
         }
     }
